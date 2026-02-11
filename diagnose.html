@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏诊断工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .game-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .game-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .test-result {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-result.pass {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .test-result.fail {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        .test-result.info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+        .test-result.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        .icon {
+            font-size: 24px;
+        }
+        .message {
+            flex: 1;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+        .file-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .file-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: white;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .console-line {
+            margin: 2px 0;
+        }
+        .console-error { color: #f48771; }
+        .console-warn { color: #cca700; }
+        .console-info { color: #4ec9b0; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status-running { background: #28a745; color: white; }
+        .status-stopped { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 游戏诊断工具</h1>
+
+        <!-- Tetris Section -->
+        <div class="game-section">
+            <h2>🧩 俄罗斯方块 (Tetris)</h2>
+            <div id="tetris-results"></div>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="testTetris()">运行测试</button>
+                <button class="btn btn-primary" onclick="openTetris()">打开游戏</button>
+            </div>
+            <div class="console-output" id="tetris-console" style="display:none;"></div>
+        </div>
+
+        <!-- Draw & Guess Section -->
+        <div class="game-section">
+            <h2>🎨 你画我猜 (Draw & Guess) <span id="server-status" class="status-badge status-stopped">服务器状态</span></h2>
+            <div id="draw-results"></div>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="testDrawAndGuess()">运行测试</button>
+                <button class="btn btn-primary" onclick="openDrawAndGuess()">打开游戏</button>
+                <button class="btn btn-warning" onclick="checkServer()">检查服务器</button>
+            </div>
+            <div class="console-output" id="draw-console" style="display:none;"></div>
+        </div>
+
+        <!-- Quick Start Guide -->
+        <div class="game-section">
+            <h2>📖 快速开始指南</h2>
+            <div class="test-result info">
+                <span class="icon">💡</span>
+                <div class="message">
+                    <strong>俄罗斯方块:</strong> 单机游戏，直接打开即可玩<br>
+                    <strong>你画我猜:</strong> 需要服务器，确保服务器运行在 http://localhost:3001
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Override console.log to capture output
+        const originalConsole = { ...console };
+        const consoles = {
+            tetris: [],
+            draw: []
+        };
+
+        function captureConsole(type) {
+            ['log', 'error', 'warn', 'info'].forEach(method => {
+                console[method] = function(...args) {
+                    originalConsole[method](...args);
+                    consoles[type].push({
+                        method,
+                        message: args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')
+                    });
+                };
+            });
+        }
+
+        function restoreConsole() {
+            Object.keys(originalConsole).forEach(method => {
+                console[method] = originalConsole[method];
+            });
+        }
+
+        function displayConsole(type, elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            container.style.display = 'block';
+
+            if (consoles[type].length === 0) {
+                container.innerHTML = '<div class="console-line console-info">没有控制台输出</div>';
+                return;
+            }
+
+            consoles[type].forEach(log => {
+                const line = document.createElement('div');
+                line.className = `console-line console-${log.method}`;
+                line.textContent = `[${log.method.toUpperCase()}] ${log.message}`;
+                container.appendChild(line);
+            });
+        }
+
+        // Test results helpers
+        function addResult(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+
+            const icons = {
+                pass: '✅',
+                fail: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+
+            div.innerHTML = `
+                <span class="icon">${icons[type]}</span>
+                <div class="message">${message}</div>
+            `;
+            container.appendChild(div);
+        }
+
+        // Clear results
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+            document.getElementById(containerId.replace('-results', '-console')).style.display = 'none';
+        }
+
+        // Tetris Tests
+        async function testTetris() {
+            clearResults('tetris-results');
+            consoles.tetris = [];
+            captureConsole('tetris');
+
+            addResult('tetris-results', '开始测试俄罗斯方块...', 'info');
+
+            // Test 1: Check files exist
+            addResult('tetris-results', '检查游戏文件...', 'info');
+            const files = [
+                'public/index.html',
+                'public/styles.css',
+                'public/tetris.js'
+            ];
+
+            let allFilesExist = true;
+            for (const file of files) {
+                try {
+                    const response = await fetch(file);
+                    if (response.ok) {
+                        addResult('tetris-results', `✓ ${file}`, 'pass');
+                    } else {
+                        addResult('tetris-results', `✗ ${file} 不存在`, 'fail');
+                        allFilesExist = false;
+                    }
+                } catch (error) {
+                    addResult('tetris-results', `✗ ${file} 加载失败`, 'fail');
+                    allFilesExist = false;
+                }
+            }
+
+            // Test 2: Check Canvas support
+            const canvasSupported = !!document.createElement('canvas').getContext;
+            if (canvasSupported) {
+                addResult('tetris-results', '浏览器支持 Canvas', 'pass');
+            } else {
+                addResult('tetris-results', '浏览器不支持 Canvas', 'fail');
+            }
+
+            // Test 3: Check localStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                addResult('tetris-results', 'localStorage 可用', 'pass');
+            } catch (error) {
+                addResult('tetris-results', 'localStorage 不可用（最高分功能可能无法使用）', 'warning');
+            }
+
+            // Test 4: Load and validate JavaScript
+            try {
+                const response = await fetch('public/tetris.js');
+                const code = await response.text();
+
+                // Check for critical functions
+                const criticalFunctions = [
+                    'TetrisGame',
+                    'gameLoop',
+                    'moveLeft',
+                    'moveRight',
+                    'rotate',
+                    'checkCollision',
+                    'clearLines'
+                ];
+
+                let allFunctionsFound = true;
+                criticalFunctions.forEach(func => {
+                    if (!code.includes(func)) {
+                        addResult('tetris-results', `缺少关键函数: ${func}`, 'fail');
+                        allFunctionsFound = false;
+                    }
+                });
+
+                if (allFunctionsFound) {
+                    addResult('tetris-results', '游戏逻辑完整', 'pass');
+                }
+
+                // Check for common issues
+                if (code.includes('getElementById')) {
+                    addResult('tetris-results', 'DOM 元素引用正常', 'pass');
+                }
+
+                if (code.includes('requestAnimationFrame')) {
+                    addResult('tetris-results', '使用 requestAnimationFrame（流畅动画）', 'pass');
+                }
+
+            } catch (error) {
+                addResult('tetris-results', `JavaScript 代码检查失败: ${error.message}`, 'fail');
+            }
+
+            restoreConsole();
+            displayConsole('tetris', 'tetris-console');
+
+            // Summary
+            if (allFilesExist && canvasSupported) {
+                addResult('tetris-results', '✅ 俄罗斯方块游戏应该可以正常运行！点击"打开游戏"按钮开始玩。', 'pass');
+            } else {
+                addResult('tetris-results', '❌ 发现问题，请检查上述错误', 'fail');
+            }
+        }
+
+        // Draw & Guess Tests
+        async function testDrawAndGuess() {
+            clearResults('draw-results');
+            consoles.draw = [];
+            captureConsole('draw');
+
+            addResult('draw-results', '开始测试你画我猜...', 'info');
+
+            // Test 1: Check server connectivity
+            addResult('draw-results', '检查服务器连接...', 'info');
+            try {
+                const response = await fetch('http://localhost:3001', {
+                    mode: 'no-cors'
+                });
+                addResult('draw-results', '服务器在运行（端口 3001）', 'pass');
+                updateServerStatus(true);
+            } catch (error) {
+                addResult('draw-results', '无法连接到服务器 http://localhost:3001', 'fail');
+                addResult('draw-results', '解决方法: 在 draw-and-guess 目录运行 npm start', 'warning');
+                updateServerStatus(false);
+            }
+
+            // Test 2: Check WebSocket support
+            const wsSupported = 'WebSocket' in window;
+            if (wsSupported) {
+                addResult('draw-results', '浏览器支持 WebSocket', 'pass');
+            } else {
+                addResult('draw-results', '浏览器不支持 WebSocket', 'fail');
+            }
+
+            // Test 3: Check Canvas
+            const canvasSupported = !!document.createElement('canvas').getContext;
+            if (canvasSupported) {
+                addResult('draw-results', '浏览器支持 Canvas（绘画功能）', 'pass');
+            } else {
+                addResult('draw-results', '浏览器不支持 Canvas', 'fail');
+            }
+
+            restoreConsole();
+            displayConsole('draw', 'draw-console');
+        }
+
+        async function checkServer() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '检查中...';
+
+            try {
+                const response = await fetch('http://localhost:3001', { mode: 'no-cors' });
+                addResult('draw-results', '✓ 服务器正在运行', 'pass');
+                updateServerStatus(true);
+            } catch (error) {
+                addResult('draw-results', '✗ 服务器未运行', 'fail');
+                updateServerStatus(false);
+            }
+
+            btn.disabled = false;
+            btn.textContent = '检查服务器';
+        }
+
+        function updateServerStatus(running) {
+            const badge = document.getElementById('server-status');
+            if (running) {
+                badge.textContent = '运行中';
+                badge.className = 'status-badge status-running';
+            } else {
+                badge.textContent = '已停止';
+                badge.className = 'status-badge status-stopped';
+            }
+        }
+
+        // Open games
+        function openTetris() {
+            window.open('public/index.html', '_blank');
+        }
+
+        function openDrawAndGuess() {
+            window.open('http://localhost:3001', '_blank');
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            addResult('tetris-results', '点击"运行测试"开始诊断', 'info');
+            addResult('draw-results', '点击"运行测试"开始诊断', 'info');
+        });
+    </script>
+</body>
+</html>
