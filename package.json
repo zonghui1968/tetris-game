@@ -1,0 +1,16 @@
+{
+  "name": "tetris-game",
+  "version": "1.0.0",
+  "description": "Classic Tetris Game - 俄罗斯方块",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Open index.html in your browser to play'",
+    "serve": "npx http-server -p 8080"
+  },
+  "keywords": ["tetris", "game", "javascript", "puzzle"],
+  "author": "AI Assistant",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块 | Tetris</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>俄罗斯方块</h1>
+            <p class="subtitle">Tetris</p>
+        </div>
+
+        <div class="game-content">
+            <div class="main-panel">
+                <canvas id="gameCanvas" width="300" height="600"></canvas>
+            </div>
+
+            <div class="side-panel">
+                <div class="info-box">
+                    <h3>下一个</h3>
+                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                </div>
+
+                <div class="info-box">
+                    <h3>分数</h3>
+                    <p id="score" class="score">0</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>等级</h3>
+                    <p id="level" class="level">1</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>消除行数</h3>
+                    <p id="lines" class="lines">0</p>
+                </div>
+
+                <div class="controls-info">
+                    <h3>操作说明</h3>
+                    <div class="key-row">
+                        <span class="key">←</span>
+                        <span class="key">→</span>
+                        <span>左右移动</span>
+                    </div>
+                    <div class="key-row">
+                        <span class="key">↑</span>
+                        <span>旋转</span>
+                    </div>
+                    <div class="key-row">
+                        <span class="key">↓</span>
+                        <span>加速下落</span>
+                    </div>
+                    <div class="key-row">
+                        <span class="key">Space</span>
+                        <span>直接落底</span>
+                    </div>
+                    <div class="key-row">
+                        <span class="key">P</span>
+                        <span>暂停/继续</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-panel">
+            <button id="startBtn" class="btn btn-primary">开始游戏</button>
+            <button id="pauseBtn" class="btn btn-secondary" disabled>暂停</button>
+            <button id="restartBtn" class="btn btn-secondary" disabled>重新开始</button>
+        </div>
+    </div>
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2>游戏结束</h2>
+            <p>最终分数</p>
+            <p id="finalScore" class="final-score">0</p>
+            <button id="playAgainBtn" class="btn btn-primary">再玩一次</button>
+        </div>
+    </div>
+
+    <script src="tetrominoes.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

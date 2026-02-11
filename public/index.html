@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块 - Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Game Title -->
+        <h1 class="game-title">🎮 俄罗斯方块</h1>
+        
+        <!-- Main Game Area -->
+        <div class="game-area">
+            <!-- Left Panel - Info -->
+            <div class="side-panel left-panel">
+                <div class="info-box">
+                    <h3>分数</h3>
+                    <div id="score" class="score-display">0</div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>等级</h3>
+                    <div id="level" class="level-display">1</div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>消除行数</h3>
+                    <div id="lines" class="lines-display">0</div>
+                </div>
+            </div>
+            
+            <!-- Center - Game Board -->
+            <div class="center-panel">
+                <canvas id="gameCanvas" width="300" height="600"></canvas>
+                
+                <!-- Game Over / Start Overlay -->
+                <div id="overlay" class="overlay">
+                    <div class="overlay-content">
+                        <h2 id="overlay-title">俄罗斯方块</h2>
+                        <p id="overlay-message">按 SPACE 开始游戏</p>
+                        <div class="controls-info">
+                            <p>← → : 移动</p>
+                            <p>↑ : 旋转</p>
+                            <p>↓ : 加速下落</p>
+                            <p>SPACE : 暂停/继续</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Next Piece -->
+            <div class="side-panel right-panel">
+                <div class="info-box">
+                    <h3>下一个</h3>
+                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                </div>
+                
+                <div class="info-box">
+                    <h3>控制</h3>
+                    <div class="controls-list">
+                        <div class="control-item">
+                            <span class="key">←</span>
+                            <span class="desc">左移</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">→</span>
+                            <span class="desc">右移</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">↑</span>
+                            <span class="desc">旋转</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">↓</span>
+                            <span class="desc">加速</span>
+                        </div>
+                        <div class="control-item">
+                            <span class="key">SPACE</span>
+                            <span class="desc">暂停</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>最高分</h3>
+                    <div id="high-score" class="high-score-display">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div class="mobile-controls">
+            <button id="btn-left" class="mobile-btn">◀</button>
+            <button id="btn-rotate" class="mobile-btn">↻</button>
+            <button id="btn-right" class="mobile-btn">▶</button>
+            <button id="btn-down" class="mobile-btn">▼</button>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>游戏规则</h3>
+            <ul>
+                <li>填满一行即可消除并获得分数</li>
+                <li>同时消除多行获得额外分数奖励</li>
+                <li>每消除 10 行升级，速度加快</li>
+                <li>当方块堆到顶部时游戏结束</li>
+            </ul>
+            <h3>计分规则</h3>
+            <ul>
+                <li>消除 1 行: 100 分</li>
+                <li>消除 2 行: 300 分</li>
+                <li>消除 3 行: 500 分</li>
+                <li>消除 4 行 (Tetris): 800 分</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="tetris.js"></script>
+</body>
+</html>
